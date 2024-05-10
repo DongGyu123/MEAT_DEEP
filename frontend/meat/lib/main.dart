@@ -1,125 +1,129 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  // camera 초기화
+  WidgetsFlutterBinding.ensureInitialized();
+  final cameras = await availableCameras();
+  final firstCamera = cameras.first;
+
+  // run app
+  runApp(
+    MaterialApp(
+      theme: ThemeData.dark(),
+      // 표시되는 홈 화면 : TakePictureScreen 위젯
+      home: TakePictureScreen(
+        camera: firstCamera,
+      ),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+// TakePictureScreen 위젯 : 카메라 화면 관리
+class TakePictureScreen extends StatefulWidget {
+  // main에서 camera: firstCamera 받아옴
+  const TakePictureScreen({
+    super.key,
+    required this.camera,
+  });
+  final CameraDescription camera; // 받아온 camera
 
-  // This widget is the root of your application.
+  @override
+  TakePictureScreenState createState() => TakePictureScreenState();
+}
+
+class TakePictureScreenState extends State<TakePictureScreen> {
+  // TakePictureScreen의 state 관리
+  /*
+    CameraController : 카메라 하드웨어에 대한 액세스를 관리하고, 
+    카메라의 초기화, 미리보기 설정, 사진 촬영 및 기타 카메라 관련 기능을 수행하는 데 사용
+   */
+  late CameraController _controller;
+  late Future<void> _initializeControllerFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    // CameraController create 및 초기화
+    _controller = CameraController(
+      widget.camera, // 받아온 camera를 state로 관리
+      ResolutionPreset.medium, // camera 해상도 설정
+    );
+    _initializeControllerFuture = _controller.initialize();
+  }
+
+  @override
+  void dispose() {
+    // 화면 위젯 사용되지 않을 때, camera controller 리소스도 해제
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return Scaffold(
+      appBar: AppBar(title: const Text('Take a picture')),
+      // 카메라 미리보기 화면
+      body: FutureBuilder<void>(
+        future: _initializeControllerFuture, // 비동기작업 기다리는 대상 객체
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            // 비동기작업 완료되면
+            // CameraController의 CameraPreview 사용
+            return CameraPreview(_controller);
+          } else {
+            // 비동기작업 완료되지 않았으면
+            // 즉 CameraPreview 없을 때 로딩 화면
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      // 사진 촬영 버튼
+      floatingActionButton: FloatingActionButton(
+        // 버튼 눌렸을 때 수행 작업
+        onPressed: () async {
+          try {
+            await _initializeControllerFuture; // 카메라 초기화 ensure
+            // CameraController의 takePicture() 사용
+            // 사진 촬영 결과 image에 저장
+            final image = await _controller.takePicture();
+
+            // 위젯 mounted 안되었을 때 버튼 안보이게 (화면 전환 시 등)
+            if (!context.mounted) return;
+            // 화면 전환
+            await Navigator.of(context).push(
+              MaterialPageRoute(
+                // DisplayPictureScreen 화면으로
+                builder: (context) => DisplayPictureScreen(
+                  imagePath: image.path, // 촬영한 image의 path 전달
+                ),
+              ),
+            );
+          } catch (e) {
+            print(e);
+          }
+        },
+        child: const Icon(Icons.camera_alt), // 카메라 아이콘
+      ),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+// DisplayPictureScreen : 촬영된 사진 보여주는 화면
+class DisplayPictureScreen extends StatelessWidget {
+  // 촬영된 사진 path를 imagePath로 받아옴
+  final String imagePath;
+  const DisplayPictureScreen({super.key, required this.imagePath});
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      appBar: AppBar(title: const Text('Display the Picture')),
+      // 촬영된 사진 표시
+      body: Image.file(File(imagePath)),
     );
   }
 }
