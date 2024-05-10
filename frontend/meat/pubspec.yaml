@@ -39,6 +39,8 @@ dependencies:
   camera: ^0.10.6 # Provides tools to work with the cameras on the device.
   path_provider: ^2.1.3 # Finds the correct paths to store images.
   path: ^1.9.0 # Creates paths that work on any platform.
+  # http (for api) dependency
+  http: ^1.2.1
 
 dev_dependencies:
   flutter_test:

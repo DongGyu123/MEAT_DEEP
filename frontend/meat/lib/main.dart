@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:http/http.dart' as http;
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
@@ -93,6 +94,8 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 
             // 위젯 mounted 안되었을 때 버튼 안보이게 (화면 전환 시 등)
             if (!context.mounted) return;
+            // uploadImage 함수 호출하여 이미지 업로드
+            await uploadImage(image.path);
             // 화면 전환
             await Navigator.of(context).push(
               MaterialPageRoute(
@@ -125,5 +128,28 @@ class DisplayPictureScreen extends StatelessWidget {
       // 촬영된 사진 표시
       body: Image.file(File(imagePath)),
     );
+  }
+}
+
+// 촬영 사진을 서버로 전송
+Future<void> uploadImage(String imagePath) async {
+  var uri =
+      Uri.parse('http://10.0.2.2:8000/upload/'); // 에뮬레이터가 실행 중인 컴퓨터의 localhost
+  var request = http.MultipartRequest('POST', uri);
+  request.files.add(await http.MultipartFile.fromPath(
+    'file',
+    imagePath,
+  ));
+  // request.fields['user'] = 'example_user';
+
+  try {
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      print('Image uploaded successfully.');
+    } else {
+      print('Failed to upload image.');
+    }
+  } catch (e) {
+    print('Error occurred: $e');
   }
 }
