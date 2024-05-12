@@ -41,6 +41,8 @@ dependencies:
   path: ^1.9.0 # Creates paths that work on any platform.
   # http (for api) dependency
   http: ^1.2.1
+  # google_fonts dependency
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:
@@ -90,6 +92,18 @@ flutter:
   #       - asset: fonts/TrajanPro.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
+  # fonts:
+  #   - family: Inter
+  #     fonts:
+  #       - asset: assets/fonts/Inter-Black.ttf
+  #       - asset: assets/fonts/Inter-Bold.ttf
+  #       - asset: assets/fonts/Inter-ExtraBold-.ttf
+  #       - asset: assets/fonts/Inter-ExtraLight.ttf
+  #       - asset: assets/fonts/Inter-Light.ttf
+  #       - asset: assets/fonts/Inter-Medium.ttf
+  #       - asset: assets/fonts/Inter-Regular.ttf
+  #       - asset: assets/fonts/Inter-SemiBold.ttf
+  #       - asset: assets/fonts/Inter-Thin.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
