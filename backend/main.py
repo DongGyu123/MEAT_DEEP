@@ -18,10 +18,20 @@ async def read_item(item_id: int, q: str = None):
 
 
 @app.post("/upload/")
+
 async def create_upload_file(file: UploadFile = File(...)):
     """
         이미지 파일 전송 받아서 로컬에 저장 
     """
+    dir_path = os.path.dirname(image_path)
+
+
+    folder_to_delete = os.path.join(dir_path, "predict")
+    if os.path.exists(folder_to_delete):
+        shutil.rmtree(folder_to_delete)
+        print(f"Folder {folder_to_delete} deleted successfully.")
+    else:
+        print(f"Folder {folder_to_delete} does not exist.")
     folder = 'uploads'
     os.makedirs(folder, exist_ok=True)
     file_location = f"{folder}/{file.filename}"
@@ -29,5 +39,6 @@ async def create_upload_file(file: UploadFile = File(...)):
     with open(file_location, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
     result=model.predict(source='./uploads/gogi.jpg', save=True)
-    image_path = "C:/Users/daniel/Desktop/MEAT/backend/gogi/runs/detect/predict/a.jpg"    
+    image_path = "C:/Users/daniel/Desktop/MEAT/backend/gogi/runs/detect/predict/a.jpg"
+        
     return FileResponse(image_path)
