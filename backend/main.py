@@ -1,10 +1,11 @@
 from fastapi import FastAPI, File, UploadFile
 import os
 import shutil
-
+from fastapi.responses import FileResponse
+from ultralytics import YOLO
 # FastAPI 인스턴스를 만듭니다.
 app = FastAPI()
-
+model = YOLO('./gogi/runs/detect/train10/weights/best.pt')
 
 @app.get("/")  # 루트 엔드포인트를 정의합니다.
 async def read_root():
@@ -27,5 +28,6 @@ async def create_upload_file(file: UploadFile = File(...)):
 
     with open(file_location, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
-
-    return {"filename": file.filename}
+    result=model.predict(source='./uploads/gogi.jpg', save=True)
+    image_path = "C:/Users/daniel/Desktop/MEAT/backend/gogi/runs/detect/predict/a.jpg"    
+    return FileResponse(image_path)
