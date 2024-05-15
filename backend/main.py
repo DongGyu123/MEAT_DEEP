@@ -1,12 +1,13 @@
-import json
+import yolo2cnn
 from fastapi import FastAPI, File, UploadFile, Response
-import os
-import shutil
 from fastapi.responses import FileResponse
-from ultralytics import YOLO
+
+YOLO_MODEL_PATH = './gogi/best.pt'
+CNN_MODEL_PATH = './gogi/temp'
+TEMP_PATH = './'
+
 # FastAPI 인스턴스를 만듭니다.
 app = FastAPI()
-model = YOLO('./gogi/runs/detect/train10/weights/best.pt')
 
 @app.get("/")  # 루트 엔드포인트를 정의합니다.
 async def read_root():
@@ -34,17 +35,11 @@ async def create_upload_file(file: UploadFile = File(...)):
     with open(file_location, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
     result=model.predict(source='./uploads/file.jpg', save=True)
-    data=result[0].boxes
-    respond = {
-    'cls': data.cls.tolist(),  # 리스트로 변환하여 추가
-    'conf': data.conf.tolist(),
-    'id': data.id,
-    'xyxyn': data.xyxyn.tolist()  # 리스트로 변환하여 추가
-    }
-    print('the value of result: ', type(respond['cls']), type(respond['conf']), type(respond['id']), type(respond['xyxyn']))
-   
-    json_string = json.dumps(respond)
+    
+    json_string = yolo2cnn.yolo2cnn(YOLO_MODEL_PATH, CNN_MODEL_PATH, TEMP_PATH, image_path)
+    
     dir_path = os.path.dirname(__file__)
+    
     # folder_to_delete = os.path.join(dir_path, "predict")
     # if os.path.exists(folder_to_delete):
     #     shutil.rmtree(folder_to_delete)
