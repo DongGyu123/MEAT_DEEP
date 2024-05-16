@@ -1,7 +1,7 @@
 import yolo2cnn
 from fastapi import FastAPI, File, UploadFile, Response
 from fastapi.responses import FileResponse
-
+import os
 YOLO_MODEL_PATH = './gogi/models/best.pt'
 CNN_MODEL_PATH = './gogi/models/cnn 모델 이름'
 TEMP_PATH = './gogi/temp'
