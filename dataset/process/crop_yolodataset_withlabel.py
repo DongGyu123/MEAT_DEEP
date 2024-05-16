@@ -34,7 +34,7 @@ def save_cropped_image_with_label(classes, dataset_dir, save_dir):
                     continue
 
                 with open(label_path, 'r') as file:
-                    for line in file.readlines():
+                    for idx, line in enumerate(file.readlines()):
                         cls_id, x_center, y_center, bbox_width, bbox_height = map(
                             float, line.split())
                         class_name = classes[int(cls_id)]
@@ -54,7 +54,7 @@ def save_cropped_image_with_label(classes, dataset_dir, save_dir):
                         crop_img = image[y:y+h, x:x+w]
 
                         # 크롭 이미지 저장
-                        crop_filename = f"{os.path.splitext(filename)[0]}_{cls_id}.png"
+                        crop_filename = f"{os.path.splitext(filename)[0]}_{cls_id}_{idx}.png"
                         cv2.imwrite(os.path.join(
                             class_dir, crop_filename), crop_img)
 
