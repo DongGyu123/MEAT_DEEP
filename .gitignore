@@ -1,2 +1,6 @@
 **/__pycache__/
 backend/uploads/
+
+# datasets
+dataset/process/datasets/
+dataset/process/cropped_images/
