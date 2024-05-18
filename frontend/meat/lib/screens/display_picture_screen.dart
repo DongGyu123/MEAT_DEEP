@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:meat/widgets/boundingbox_widget.dart';
 import '../utilities/bounding_box_converter.dart';
 
 class DisplayPictureScreen extends StatefulWidget {
@@ -71,19 +72,15 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
                   child: Image.file(File(widget.imagePath)),
                 ),
                 ...boundingBoxes
-                    .map((box) => Positioned(
-                          left: box['left'],
-                          top: box['top'],
-                          child: Container(
-                            width: box['width'],
-                            height: box['height'],
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: const Color.fromARGB(255, 211, 53, 53),
-                                  width: 2),
-                            ),
-                          ),
-                        ))
+                    .map(
+                      (box) => BoundingboxWidget(
+                        box: box,
+                        onTap: () {
+                          print(
+                              'Box at position (${box['left']}, ${box['top']}) tapped!');
+                        },
+                      ),
+                    )
                     .toList(),
               ],
             ),
