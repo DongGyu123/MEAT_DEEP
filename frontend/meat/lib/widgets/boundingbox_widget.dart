@@ -3,11 +3,13 @@ import "package:flutter/material.dart";
 class BoundingboxWidget extends StatelessWidget {
   final Map<String, dynamic> box;
   final VoidCallback onTap;
+  final bool isSelected;
 
   const BoundingboxWidget({
     Key? key,
     required this.box,
     required this.onTap,
+    required this.isSelected,
   }) : super(key: key);
 
   @override
@@ -22,7 +24,9 @@ class BoundingboxWidget extends StatelessWidget {
           height: box['height']!,
           decoration: BoxDecoration(
             border: Border.all(
-              color: const Color.fromARGB(255, 211, 53, 53),
+              color: isSelected
+                  ? Color.fromARGB(255, 250, 2, 2)
+                  : Color.fromARGB(255, 162, 4, 4),
               width: 2,
             ),
           ),

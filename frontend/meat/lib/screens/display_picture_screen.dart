@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:meat/widgets/boundingbox_widget.dart';
+import 'package:meat/widgets/chart_widget.dart';
+import 'package:meat/widgets/cropped_bbox_widget.dart';
 import '../utilities/bounding_box_converter.dart';
 
 class DisplayPictureScreen extends StatefulWidget {
@@ -20,6 +22,8 @@ class DisplayPictureScreen extends StatefulWidget {
 
 class DisplayPictureScreenState extends State<DisplayPictureScreen> {
   List<Map<String, dynamic>> boundingBoxes = [];
+  int? selectedBboxId;
+  int cookedPercentage = 70; // 초기값 설정
 
   @override
   void initState() {
@@ -47,6 +51,13 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
 
     setState(() {
       boundingBoxes = convertedBoxes;
+      selectedBboxId = 0;
+    });
+  }
+
+  void updateCookedPercentage(int newPercentage) {
+    setState(() {
+      cookedPercentage = newPercentage; // 새로운 백분율로 업데이트
     });
   }
 
@@ -71,29 +82,54 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
                   borderRadius: BorderRadius.circular(20),
                   child: Image.file(File(widget.imagePath)),
                 ),
-                ...boundingBoxes
-                    .map(
-                      (box) => BoundingboxWidget(
-                        box: box,
-                        onTap: () {
-                          print(
-                              'Box at position (${box['left']}, ${box['top']}) tapped!');
-                        },
-                      ),
-                    )
-                    .toList(),
+                ...boundingBoxes.map((box) {
+                  int index = boundingBoxes.indexOf(box);
+                  return BoundingboxWidget(
+                    box: box,
+                    isSelected: selectedBboxId == index,
+                    onTap: () {
+                      print(
+                          'Box ${index} at position (${box['left']}, ${box['top']}) tapped!');
+                      setState(() {
+                        selectedBboxId = index; // Update selected index on tap
+                        cookedPercentage = 70;
+                      });
+                    },
+                  );
+                }).toList(),
               ],
             ),
           ),
-          const Positioned(
+          Positioned(
             bottom: 30,
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 33, vertical: 35),
+              padding: const EdgeInsets.symmetric(horizontal: 33, vertical: 35),
               child: SizedBox(
                 height: 120,
-                child: Placeholder(
-                  color: Colors.black26,
-                ),
+                child: Row(children: [
+                  if (selectedBboxId != null)
+                    Expanded(
+                      flex: 2, // Takes 2 parts of the space
+                      child: CroppedBboxWidget(
+                        key: ValueKey(selectedBboxId),
+                        imagePath: widget.imagePath,
+                        boundingBox: boundingBoxes[selectedBboxId!],
+                      ),
+                    ),
+                  Expanded(
+                    flex: 5, // Takes 5 parts of the space
+                    child: PercentageBarGraph(
+                      key: UniqueKey(),
+                      cookedPercentage: cookedPercentage.toInt(),
+                      animate: true,
+                    ),
+                    //Placeholder()
+                  ),
+                ]),
+
+                // Placeholder(
+                //   color: Colors.black26,
+                // ),
               ),
             ),
           ),
