@@ -29,7 +29,7 @@ def predict(model, processed_image):
         outputs = model(processed_image)
         print("output: ", outputs)
         _, predicted = torch.max(outputs, 1)
-        confidence = outputs[0]
+        confidence = torch.normalize(outputs, dim=0)
         result = [confidence, predicted.item()]
         return result  # 클래스 인덱스 반환
     
