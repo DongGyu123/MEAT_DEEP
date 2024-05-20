@@ -3,10 +3,15 @@ from torchvision import models, transforms
 from PIL import Image
 
 def load_model(model_path, num_classes):
-    model = models.resnet50()  # 모델 구조 초기화 : 기본 ResNet50 모델
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model = models.resnet50().to(device)  # 모델 구조 초기화 : 기본 ResNet50 모델
     model.fc = torch.nn.Linear(model.fc.in_features, num_classes)  # 출력 계층 수정
-    model.load_state_dict(torch.load(model_path))  # 가중치 불러오기
-    model.eval()  # 추론 모드로 설정
+    if torch.cuda.is_available():
+        model.load_state_dict(torch.load(model_path))
+    else:
+        # CUDA를 사용할 수 없는 경우 CPU로 매핑하여 모델 로드
+        model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
+    model.eval()  
     return model
 
 def preprocess_image(image_path):
@@ -22,11 +27,15 @@ def preprocess_image(image_path):
 def predict(model, processed_image):
     with torch.no_grad():  # 그라디언트 계산 비활성화
         outputs = model(processed_image)
+        print("output: ", outputs)
         _, predicted = torch.max(outputs, 1)
-        return predicted.item()  # 클래스 인덱스 반환
+        confidence = outputs[0]
+        result = [confidence, predicted.item()]
+        return result  # 클래스 인덱스 반환
     
 def main(model_path, num_classes, image_path):
     model = load_model(model_path, num_classes)
     image = preprocess_image(image_path)
     prediction = predict(model, image)
-    print("Predicted class index:", prediction)
+    print("Predicted class index:", prediction[1])
+    return prediction
