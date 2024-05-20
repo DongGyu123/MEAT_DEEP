@@ -28,7 +28,7 @@ def yolo2cnn(yolo_model_path, cnn_model_path, temp_path, image_path):
         respond['conf'].append(cnn_result[i][0].tolist())       
     respond['xywhn'] = data.xywhn.tolist() # 리스트로 변환하여 추가
     print(respond, type(respond))
-    json_string = json.dumps(respond)
+    # json_string = json.dumps(respond)
 
-    return json_string
+    return respond
 

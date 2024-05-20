@@ -53,6 +53,7 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
 
     setState(() {
       boundingBoxes = convertedBoxes;
+      print('convertedBoxes ---------- ${convertedBoxes}');
       selectedBboxId = boundingBoxes.isNotEmpty ? 0 : null; // id 초기화
     });
   }

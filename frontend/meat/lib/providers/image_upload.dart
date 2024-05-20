@@ -18,8 +18,25 @@ class ImageUploadService {
         print('Image uploaded successfully.');
         // yolo bounding box 정보를 response로 받음
         var responseData = await http.Response.fromStream(response);
-        final Map<String, dynamic> data;
-        data = sonDecode(responseData);
+        var data = jsonDecode(responseData.body);
+        return Map<String, dynamic>.from(data as Map<String, dynamic>);
+        
+        // print('responseData type ---- ${responseData.runtimeType}');
+        // var jsonString = responseData.body; // 이 부분은 서버에서 보낸 JSON 문자열입니다.
+        // print('jsonString type ---- ${jsonString.runtimeType}');
+        // var data = jsonDecode(jsonString); // JSON 문자열을 디코드하여 Dart 객체로 변환
+        // print('data type ---- ${data.runtimeType}');
+        // print('Map<String, dynamic>.from(data) type ---- ${(Map<String, dynamic>.from(data)).runtimeType}');
+        // return Map<String, dynamic>.from(data); // Dart Map 객체로 변환
+
+        // var data = jsonDecode(responseData.body) as Map<String, dynamic>; // 명시적 캐스팅 추가
+        // return data;
+        // final data = (jsonDecode(responseData.body)).cast<Map<String, dynamic>>();
+        // print(data);
+        // print(data.runtimeType);
+        // return data;
+        // final Map<String, dynamic> data;
+        // data = sonDecode(responseData);
         // Map data = jsonDecode(responseData.body);
         // // Map<String, dynamic> data_ = data; 
         // var data_ = Map<String, dynamic>.from(data);

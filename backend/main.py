@@ -56,5 +56,5 @@ async def create_upload_file(file: UploadFile = File(...)):
     #     print(f"Folder {folder_to_delete} deleted successfully.")
     # else:
     #     print(f"Folder {folder_to_delete} does not exist.")
-    print(json_string)
+    print(json_string, type(json_string))
     return json_string
