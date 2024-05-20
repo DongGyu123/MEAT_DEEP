@@ -86,7 +86,8 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             if (!context.mounted) return;
             // uploadImage 함수 호출하여 이미지 업로드
             // -> 분석 결과 Bounding Box 정보 받기
-            // final boundingBoxes = await uploadImage(image.path);
+            // final yoloBoundingBoxes =
+            //     await ImageUploadService.uploadImage(image.path);
             final yoloBoundingBoxes = [
               // dummy 값
               {

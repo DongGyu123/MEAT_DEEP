@@ -51,6 +51,7 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
 
     setState(() {
       boundingBoxes = convertedBoxes;
+      // if boundingBoxes.isNotEmpty:
       selectedBboxId = 0;
     });
   }
