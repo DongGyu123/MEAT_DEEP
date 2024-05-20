@@ -7,10 +7,12 @@ class BoundingBoxConverter {
 
     for (int idx = 0; idx < responseData['xywhn'].length; idx++) {
       int cookedPercentage = (responseData['conf'][idx] * 100).round();
-      double left = responseData['xywhn'][idx][0] * imageWidth;
-      double top = responseData['xywhn'][idx][1] * imageHeight;
       double width = responseData['xywhn'][idx][2] * imageWidth;
       double height = responseData['xywhn'][idx][3] * imageHeight;
+      double left = responseData['xywhn'][idx][0] * imageWidth - (width / 2);
+      double top = responseData['xywhn'][idx][1] * imageHeight - (height / 2);
+
+      print('---------------- ${width} ${height}');
 
       convertedBoxes.add({
         "id": idx, // (optional)

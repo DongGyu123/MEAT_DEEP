@@ -47,8 +47,8 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
     final imageSize = await completer.future;
     final convertedBoxes = BoundingBoxConverter.convertResponseToBoundingBoxes(
       widget.responseData,
-      imageSize.width,
-      imageSize.height,
+      250, // imageSize.width,
+      400, // imageSize.height,
     );
 
     setState(() {
@@ -73,7 +73,11 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
         children: [
           const SizedBox(height: 20),
           Center(
-            child: Stack(
+            child: Container(
+              width: 250, 
+              height: 400, 
+              child: 
+            Stack(
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
@@ -97,7 +101,7 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
                 // ---------------------------------------------------------------------------
               ],
             ),
-          ),
+          ),), 
           // 하단 result 정보 표시 ----------------------------------------------------------
           Positioned(
             bottom: 30,
