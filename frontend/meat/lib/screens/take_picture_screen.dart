@@ -5,6 +5,7 @@ import 'package:meat/widgets/main_appbar.dart';
 import '../widgets/camera_preview_widget.dart';
 import '../widgets/scan_button.dart';
 import '../providers/image_upload.dart';
+import '../providers/dummy_response.dart';
 
 // TakePictureScreen : 카메라 화면 관리
 class TakePictureScreen extends StatefulWidget {
@@ -84,34 +85,20 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 
             // 위젯 mounted 안되었을 때 버튼 안보이게 (화면 전환 시 등)
             if (!context.mounted) return;
+            // --------------------------------------------------------------------------
             // uploadImage 함수 호출하여 이미지 업로드
-            // -> 분석 결과 Bounding Box 정보 받기
-            // final yoloBoundingBoxes =
+            // -> 분석 결과 정보 받기 (yolo&cnn)
+            // final responseData =
             //     await ImageUploadService.uploadImage(image.path);
-            final yoloBoundingBoxes = [
-              // dummy 값
-              {
-                "x_center": 0.5,
-                "y_center": 0.5,
-                "width": 0.2,
-                "height": 0.3,
-                "class_name": "Person"
-              },
-              {
-                "x_center": 0.8,
-                "y_center": 0.2,
-                "width": 0.1,
-                "height": 0.1,
-                "class_name": "Dog"
-              }
-            ];
+            final responseData = getDummyResponse(); // dumy bbox 값
+            // --------------------------------------------------------------------------
             // 화면 전환
             await Navigator.of(context).push(
               MaterialPageRoute(
                 // DisplayPictureScreen 화면으로
                 builder: (context) => DisplayPictureScreen(
                   imagePath: image.path, // 촬영한 image의 path 전달
-                  yoloBoundingBoxes: yoloBoundingBoxes, // 분석 결과 전달
+                  responseData: responseData, // 분석 결과 전달
                 ),
               ),
             );

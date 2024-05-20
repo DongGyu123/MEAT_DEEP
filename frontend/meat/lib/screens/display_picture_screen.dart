@@ -8,12 +8,12 @@ import '../utilities/bounding_box_converter.dart';
 
 class DisplayPictureScreen extends StatefulWidget {
   final String imagePath;
-  final List<Map<String, dynamic>> yoloBoundingBoxes;
+  final Map<String, dynamic> responseData;
 
   const DisplayPictureScreen({
     super.key,
     required this.imagePath,
-    required this.yoloBoundingBoxes,
+    required this.responseData,
   });
 
   @override
@@ -21,9 +21,10 @@ class DisplayPictureScreen extends StatefulWidget {
 }
 
 class DisplayPictureScreenState extends State<DisplayPictureScreen> {
+  // bboxes 정보를 class+confidence+xywhn 한 번에 관리
   List<Map<String, dynamic>> boundingBoxes = [];
+  // 현재 선택된 bbox id 관리
   int? selectedBboxId;
-  int cookedPercentage = 70; // 초기값 설정
 
   @override
   void initState() {
@@ -32,6 +33,7 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
   }
 
   void loadImageAndConvertBoundingBoxes() async {
+    // final Image image = Image.file(File(widget.imagePath));
     final Image image = Image.file(File(widget.imagePath));
     final ImageStream stream = image.image.resolve(ImageConfiguration.empty);
     final Completer<Size> completer = Completer<Size>();
@@ -43,22 +45,15 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
     }));
 
     final imageSize = await completer.future;
-    final convertedBoxes = BoundingBoxConverter.convertYoloToBoundingBoxes(
-      widget.yoloBoundingBoxes,
+    final convertedBoxes = BoundingBoxConverter.convertResponseToBoundingBoxes(
+      widget.responseData,
       imageSize.width,
       imageSize.height,
     );
 
     setState(() {
       boundingBoxes = convertedBoxes;
-      // if boundingBoxes.isNotEmpty:
-      selectedBboxId = 0;
-    });
-  }
-
-  void updateCookedPercentage(int newPercentage) {
-    setState(() {
-      cookedPercentage = newPercentage; // 새로운 백분율로 업데이트
+      selectedBboxId = boundingBoxes.isNotEmpty ? 0 : null; // id 초기화
     });
   }
 
@@ -71,7 +66,7 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
         style: TextStyle(
             fontSize: 20, fontWeight: FontWeight.w700, letterSpacing: 1.1),
       )),
-      // 촬영된 사진 표시
+      // 촬영된 사진 표시 -------------------------------------------------------------------
       body: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -83,6 +78,7 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
                   borderRadius: BorderRadius.circular(20),
                   child: Image.file(File(widget.imagePath)),
                 ),
+                // 개별 bbox 표시 -------------------------------------------------------------
                 ...boundingBoxes.map((box) {
                   int index = boundingBoxes.indexOf(box);
                   return BoundingboxWidget(
@@ -93,14 +89,15 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
                           'Box ${index} at position (${box['left']}, ${box['top']}) tapped!');
                       setState(() {
                         selectedBboxId = index; // Update selected index on tap
-                        cookedPercentage = 70;
                       });
                     },
                   );
                 }).toList(),
+                // ---------------------------------------------------------------------------
               ],
             ),
           ),
+          // 하단 result 정보 표시 ----------------------------------------------------------
           Positioned(
             bottom: 30,
             child: Padding(
@@ -117,20 +114,22 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
                         boundingBox: boundingBoxes[selectedBboxId!],
                       ),
                     ),
+                  // confidence 막대 그래프 ----------------------------------------------
                   Expanded(
                     flex: 5, // Takes 5 parts of the space
-                    child: PercentageBarGraph(
-                      key: UniqueKey(),
-                      cookedPercentage: cookedPercentage.toInt(),
-                      animate: true,
-                    ),
-                    //Placeholder()
+                    child: (selectedBboxId != null)
+                        ? PercentageBarGraph(
+                            key: UniqueKey(),
+                            cookedPercentage:
+                                boundingBoxes[selectedBboxId?.toInt() ?? 0]
+                                    ['cookedPercentage'],
+                            animate: true,
+                          )
+                        : const Placeholder(
+                            color: Colors.black26,
+                          ),
                   ),
                 ]),
-
-                // Placeholder(
-                //   color: Colors.black26,
-                // ),
               ),
             ),
           ),
