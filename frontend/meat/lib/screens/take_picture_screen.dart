@@ -88,9 +88,10 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             // --------------------------------------------------------------------------
             // uploadImage 함수 호출하여 이미지 업로드
             // -> 분석 결과 정보 받기 (yolo&cnn)
-            // final responseData =
-            //     await ImageUploadService.uploadImage(image.path);
-            final responseData = getDummyResponse(); // dumy bbox 값
+            final responseData =
+                await ImageUploadService.uploadImage(image.path);
+            print(responseData);
+            // final responseData = getDummyResponse(); // dumy bbox 값
             // --------------------------------------------------------------------------
             // 화면 전환
             await Navigator.of(context).push(

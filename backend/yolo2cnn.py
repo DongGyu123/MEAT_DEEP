@@ -32,13 +32,3 @@ def yolo2cnn(yolo_model_path, cnn_model_path, temp_path, image_path):
 
     return json_string
 
-
-def convert_to_onnx(pytorch_model_path, onnx_model_path):
-    # Load the PyTorch model
-    model = torch.load(pytorch_model_path)
-    # Set the model to evaluation mode
-    model.eval()
-    # Create a dummy input
-    dummy_input = torch.randn(1, 3, 224, 224)
-    # Export the model to ONNX
-    torch.onnx.export(model, dummy_input, onnx_model_path, verbose=True)

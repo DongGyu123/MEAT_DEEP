@@ -67,7 +67,7 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
             fontSize: 20, fontWeight: FontWeight.w700, letterSpacing: 1.1),
       )),
       // 촬영된 사진 표시 -------------------------------------------------------------------
-      body: Column(
+      body: SingleChildScrollView(child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           const SizedBox(height: 20),
@@ -134,7 +134,7 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
             ),
           ),
         ],
-      ),
+      )),
     );
   }
 }
