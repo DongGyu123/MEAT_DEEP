@@ -19,7 +19,7 @@ class ImageUploadService {
         // yolo bounding box 정보를 response로 받음
         var responseData = await http.Response.fromStream(response);
         var data = jsonDecode(responseData.body);
-        return List<Map<String, dynamic>>.from(data['yoloBoundingBoxes']);
+        return List<Map<String, dynamic>>.from(data);
       } else {
         print('Failed to upload image.');
         return [];
