@@ -2,7 +2,7 @@ import yolo2cnn
 from fastapi import FastAPI, File, UploadFile, Response
 from fastapi.responses import FileResponse
 import os
-YOLO_MODEL_PATH = './gogi/models/best.pt'
+YOLO_MODEL_PATH = './gogi/models/yolo.pt'
 CNN_MODEL_PATH = './gogi/models/cnn 모델 이름'
 TEMP_PATH = './gogi/temp'
 
@@ -20,7 +20,6 @@ async def read_item(item_id: int, q: str = None):
 
 
 @app.post("/upload/")
-
 async def create_upload_file(file: UploadFile = File(...)):
     """
         이미지 파일 전송 받아서 로컬에 저장 
