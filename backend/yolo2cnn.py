@@ -21,15 +21,12 @@ def yolo2cnn(yolo_model_path, cnn_model_path, temp_path, image_path):
     shutil.rmtree(temp_path)
 
     data = yolo_result[0].boxes
-    respond = []
+    print(data)
+    respond = {'cls':[], 'conf':[]}
     for i in range(len(cnn_result)):
-        respond.append(
-        {
-        'cls': cnn_result[i][1],  # 리스트로 변환하여 추가
-        'conf': cnn_result[i][0].tolist(),
-        'id': data.id,
-        'xyxyn': data.xyxyn.tolist()  # 리스트로 변환하여 추가
-        })
+        respond['cls'].append(cnn_result[i][1])
+        respond['conf'].append(cnn_result[i][0].tolist())       
+    respond['xywhn'] = data.xywhn.tolist() # 리스트로 변환하여 추가
     print(respond, type(respond))
     json_string = json.dumps(respond)
 

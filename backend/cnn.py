@@ -1,4 +1,5 @@
 import torch
+import torch.nn as nn
 from torchvision import models, transforms
 from PIL import Image
 
@@ -29,8 +30,9 @@ def predict(model, processed_image):
         outputs = model(processed_image)
         print("output: ", outputs)
         _, predicted = torch.max(outputs, 1)
-        confidence = torch.normalize(outputs, dim=0)
-        result = [confidence, predicted.item()]
+        softmax = nn.Softmax(dim=1)
+        confidence = softmax(outputs)
+        result = [confidence[0][0], predicted.item()]
         return result  # 클래스 인덱스 반환
     
 def main(model_path, num_classes, image_path):
