@@ -5,7 +5,7 @@ import 'package:meat/widgets/main_appbar.dart';
 import '../widgets/camera_preview_widget.dart';
 import '../widgets/scan_button.dart';
 import '../providers/image_upload.dart';
-import '../providers/dummy_response.dart';
+// import '../providers/dummy_response.dart';
 
 // TakePictureScreen : 카메라 화면 관리
 class TakePictureScreen extends StatefulWidget {
@@ -46,23 +46,29 @@ class TakePictureScreenState extends State<TakePictureScreen> {
     return Scaffold(
       body: Stack(children: <Widget>[
         // 카메라 미리보기 화면
-        Positioned(
-          top: 63,
-          left: 0,
-          right: 0,
-          child: CameraPreviewWidget(
-              controller: _controller,
-              initializeControllerFuture: _initializeControllerFuture),
+        Expanded(
+          
+          child: Positioned(
+            top: 80,//93,//63,
+            left: 0,
+            right: 0,
+            child: CameraPreviewWidget(
+                controller: _controller,
+                initializeControllerFuture: _initializeControllerFuture),
+          ),
         ),
-        // 설명 텍스트
+        // 설명 텍스트/2                                                                                                                    
+
+
+        
         const Positioned(
-            top: 95,
+            top: 630,//125,//95,
             left: 0,
             right: 0,
             child: Center(
               child: Text(
                 'Scanner will determine your meat doneness',
-                style: TextStyle(fontSize: 12),
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700,) //foreground: Paint()..color = Colors.white),
               ),
             )),
         // 상단 바

@@ -7,7 +7,7 @@ class ImageUploadService {
   static Future<Map<String, dynamic>> uploadImage(
       String imagePath) async {
     var uri = Uri.parse(
-        'http://172.17.10.108:8000/upload/'); // 에뮬레이터가 실행 중인 컴퓨터의 localhost
+        'http://172.17.10.158:8000/upload/'); // 에뮬레이터가 실행 중인 컴퓨터의 localhost
     var request = http.MultipartRequest('POST', uri);
     request.files.add(await http.MultipartFile.fromPath('file', imagePath));
     // request.fields['user'] = 'example_user';
