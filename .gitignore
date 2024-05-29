@@ -1,5 +1,6 @@
-**/__pycache__/
-backend/uploads/
+# backend 
+backend/__pycache__/
+backend/uploads/*
 
 # datasets
 dataset/process/datasets/
