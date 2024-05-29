@@ -3,7 +3,7 @@ import os
 import shutil
 import os
 import shutil
-from backend import yolo2cnn
+import yolo2cnn
 
 
 YOLO_MODEL_PATH = '../models/yolo.pt'

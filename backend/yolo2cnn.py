@@ -1,4 +1,4 @@
-from . import cnn_predict
+import cnn_predict
 import json
 import os
 import shutil
